@@ -1,4 +1,4 @@
-package redis
+package cmd
 
 type Redis struct {
 	DB          int

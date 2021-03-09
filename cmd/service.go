@@ -1,4 +1,4 @@
-package redis
+package cmd
 
 import (
 	"github.com/go-redis/redis"
@@ -61,22 +61,27 @@ func NewService(r Redis) *RedisService {
 }
 
 func (r *RedisService) Del(key, pattern, types string, batchSize int64) {
+	go func() {
+		for range time.Tick(100 * time.Millisecond) {
+			println("程序正在进行中，请耐心等待")
+		}
+	}()
 	switch types {
 	case "set":
-		r.Set(key, pattern, batchSize)
+		r.set(key, pattern, batchSize)
 	case "hash":
-		r.Hash(key, pattern, batchSize)
+		r.hash(key, pattern, batchSize)
 	case "string":
-		r.String(key, batchSize)
+		r.string(key, batchSize)
 	case "zset":
-		r.Zset(key, pattern, batchSize)
+		r.zset(key, pattern, batchSize)
 	case "list":
-		r.List(key, batchSize)
+		r.list(key, batchSize)
 	}
 	return
 }
 
-func (r *RedisService) Hash(key, pattern string, batchSize int64) {
+func (r *RedisService) hash(key, pattern string, batchSize int64) {
 	cursor := uint64(0)
 	for range time.Tick(100 * time.Millisecond) {
 		var result []string
@@ -105,7 +110,7 @@ func (r *RedisService) Hash(key, pattern string, batchSize int64) {
 	}
 }
 
-func (r *RedisService) Set(key, pattern string, batchSize int64) {
+func (r *RedisService) set(key, pattern string, batchSize int64) {
 	cursor := uint64(0)
 	for range time.Tick(100 * time.Millisecond) {
 		var result []string
@@ -134,7 +139,7 @@ func (r *RedisService) Set(key, pattern string, batchSize int64) {
 	}
 }
 
-func (r *RedisService) Zset(key, pattern string, batchSize int64) {
+func (r *RedisService) zset(key, pattern string, batchSize int64) {
 	cursor := uint64(0)
 	for range time.Tick(100 * time.Millisecond) {
 		var result []string
@@ -163,7 +168,7 @@ func (r *RedisService) Zset(key, pattern string, batchSize int64) {
 	}
 }
 
-func (r *RedisService) String(key string, batchSize int64) {
+func (r *RedisService) string(key string, batchSize int64) {
 	cursor := uint64(0)
 	for range time.Tick(100 * time.Millisecond) {
 		var result []string
@@ -190,7 +195,7 @@ func (r *RedisService) String(key string, batchSize int64) {
 	}
 }
 
-func (r *RedisService) List(key string, batchSize int64) {
+func (r *RedisService) list(key string, batchSize int64) {
 	cursor := int64(0)
 	var err error
 	if r.m {
